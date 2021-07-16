@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "pretty": true,
+    "sourceMap": true,
+    "target": "ES6",
+    "outDir": "./dist",
+    "baseUrl": "./lib",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": ["lib/**/*.ts", "./swagger.json"],
+  "exclude": ["node_modules"]
+}

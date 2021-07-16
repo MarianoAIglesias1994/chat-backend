@@ -1,0 +1,29 @@
+version: "3"
+services:
+  express-server:
+    container_name: express-server
+    volumes:
+      - ./src:/home/node/app/src
+      - ./nodemon.json:/home/node/app/nodemon.json
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    command: npm run dev
+    depends_on:
+      - sqlite
+    links:
+      - sqlite
+
+  sqlite:
+    container_name: sqlite
+    image: nouchka/sqlite3:latest
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./database:/var/lib/sqlite/data/database.sqlite3
+    ports:
+      - 5432:5432
