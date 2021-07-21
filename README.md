@@ -1,4 +1,4 @@
-# 💬 chat-backend-app
+# 💬 chat-backend
 
 A simple REST API for a chat backend
 

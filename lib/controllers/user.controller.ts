@@ -34,7 +34,7 @@ export class UserController {
       limit: 1,
     };
     User.update(params, update)
-      .then(() => res.status(202).json({ data: "success" }))
+      .then(() => res.status(202).json({ data: "Success" }))
       .catch((err: Error) => res.status(500).json(err));
   }
   public deleteUser(req: Request, res: Response) {
@@ -44,7 +44,7 @@ export class UserController {
       limit: 1,
     };
     User.destroy(options)
-      .then(() => res.status(204).json({ data: "success" }))
+      .then(() => res.status(204).json({ data: "Success" }))
       .catch((err: Error) => res.status(500).json(err));
   }
 }

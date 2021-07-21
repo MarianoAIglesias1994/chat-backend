@@ -1,15 +1,13 @@
 import { User } from "../models/user.model";
 
 import passport from "passport";
-const LocalStrategy = require("passport-local").Strategy;
-const BearerStrategy = require("passport-http-bearer").Strategy;
+import passportLocal from "passport-local";
+import passportHttpBearer from "passport-http-bearer";
 import jwt from "jwt-simple";
 import bcrypt from "bcrypt";
 
-const SECRET = String(process.env.SECRET);
-const BCRYPT_SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS);
-
-// TODO: Improve token generation -> add expiration time
+const LocalStrategy = passportLocal.Strategy;
+const BearerStrategy = passportHttpBearer.Strategy;
 
 export class PassportCfg {
   public config(): void {
@@ -30,15 +28,22 @@ export class PassportCfg {
               .compare(password, user.password)
               .then((response) => {
                 if (response !== true) {
-                  console.log("Passwords do not match");
                   return done(null, false, {
                     message: "Passwords do not match",
                   });
                 }
-                console.log("User found & authenticated");
+                const currentDateSeconds = Date.now() / 1000;
                 return done(null, {
                   id: user.id,
-                  token: jwt.encode({ username }, SECRET),
+                  token: jwt.encode(
+                    {
+                      nbf: currentDateSeconds,
+                      exp:
+                        currentDateSeconds +
+                        parseInt(process.env.TOKEN_TTL_SECS),
+                    },
+                    process.env.SECRET
+                  ),
                 });
               })
               .catch((err: Error) => console.log(err));
@@ -63,19 +68,17 @@ export class PassportCfg {
               },
             }).then((user) => {
               if (user != null) {
-                console.log("Username already taken");
                 return done(null, false, {
                   message: "Username already taken",
                 });
               } else {
                 bcrypt
-                  .hash(password, BCRYPT_SALT_ROUNDS)
+                  .hash(password, parseInt(process.env.BCRYPT_SALT_ROUNDS))
                   .then((hashedPassword) => {
                     User.create({
                       username: req.body.username,
                       password: hashedPassword,
                     }).then((user) => {
-                      console.log("User created");
                       return done(null, user);
                     });
                   });
@@ -90,18 +93,8 @@ export class PassportCfg {
     passport.use(
       new BearerStrategy({ passReqToCallback: true }, (req, token, done) => {
         try {
-          const { username } = jwt.decode(token, SECRET);
-          User.findOne<User>({
-            where: {
-              username: username,
-            },
-          }).then((user: User | null) => {
-            if (user === null) {
-              return done(null, false, { message: "Username does not exist" });
-            } else {
-              done(null, user);
-            }
-          });
+          jwt.decode(token, process.env.SECRET);
+          return done(null, true);
         } catch (error) {
           console.log(error);
           return done(null, false, { message: "Invalid token" });

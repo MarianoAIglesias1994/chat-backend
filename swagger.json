@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "description": "\nWelcome! This page describes a simple REST API for a chat backend.\n",
-    "title": "Chat BackEnd App",
+    "title": "Chat BackEnd",
     "version": "v1"
   },
   "servers": [

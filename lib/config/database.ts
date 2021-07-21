@@ -2,7 +2,7 @@ import { Sequelize } from "sequelize";
 
 export const database = new Sequelize({
   dialect: "sqlite",
-  storage: String(process.env.STORAGE),
+  storage: "./database/database.sqlite3",
 });
 
 // TODO: Add credentials for DB
